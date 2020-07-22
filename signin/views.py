@@ -44,3 +44,5 @@ class UserDetail(APIView):
         serializer.save()
         return redirect('profile', pk=user.pk)
 
+def home(request):
+    return render(request, 'index.html', {})
