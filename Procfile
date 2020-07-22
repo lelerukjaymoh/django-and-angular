@@ -1,1 +1,1 @@
-web: gunicorn signin.wsgi --log-file
+web: gunicorn signin.wsgi
