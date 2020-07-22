@@ -25,7 +25,7 @@ SECRET_KEY = '!$e3d4k8*b)ofq&eft+fc*ma_ljb%a+2=+z@#x&6i=i+b#j)91'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['archtech-interview.herokuapp.com/', '127.0.0.1']
+ALLOWED_HOSTS = ['archtech-interview.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
