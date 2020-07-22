@@ -1,30 +1,46 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from signin.serializers import UserSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
+class Users(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'all_users.html'
+
+    def get(self, request):
+        users = User.objects.all()
+        serializer_context = {
+            'request': request,
+        }
+        serializer = UserSerializer(users, context=serializer_context)
+        return Response({'users': users})
 
 
-def home(request):
-    return render(request, 'index.html', {})
+class UserDetail(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile.html'
 
-# @api_view(['GET', 'POST'])
-# def user(request):
-#     if request.method == 'GET':
-#         users = User.objects.all()
-#         serializer = UserSerializer(users, many=True)
-#         return Response(serializer.data)
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer_context = {
+            'request': request,
+        }
+        serializer = UserSerializer(user, context=serializer_context)
+        return Response({'serializer': serializer, 'profile': user})
 
-#     elif request.method == 'POST':
-#         serializer = UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, pk):
+        print(pk)
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user, data=request.data)
+        if not serializer.is_valid():
+            return Response({'serializer': serializer, 'profile': user})
+        serializer.save()
+        return redirect('profile', pk=user.pk)
+
